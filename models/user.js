@@ -3,7 +3,11 @@ module.exports = {
         type: String,
         required: true,
     },
-    date:{
+    password: {
+        type: String,
+        required: true,
+    },
+    createDate:{
         type: Date,
         default: Date.now(),
     }

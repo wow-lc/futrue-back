@@ -1,20 +1,57 @@
 const jwt = require('jsonwebtoken');
+const config = require('../config.js');
+const dbHelper = require('../db/dbHelper');
 
-module.exports = (router) => {
-    router.get("/test",async ctx => {
+const User = dbHelper.getModel('user');
+
+/**
+ *  用户api
+ */
+module.exports = (router) => {    
+    /**
+     * 注册
+     */
+    router.post('/register', async ctx => {
+        const { username, password } = ctx.request.body;
+        const newUser = new User({
+            username,
+            password,
+        }) 
+        const user = await newUser.save();
         ctx.status = 200;
-        ctx.body = { msg:'user works.' };
-    });
-    
+        ctx.body = user;
+    })
+    /**
+     * 登录
+     */
     router.post("/login", async ctx => {
-        // 返回token
+        const { username, password } = ctx.request.body;
         const payload = {
-            username: 'lichao',
-            userId: '123',
+            username,
+            password,
         };
-        const token = jwt.sign(payload,"keySecret",{expiresIn: 60 * 60 * 12 * 7});
+        // 验证
+        const users = await User.find({ username });
+        console.log(payload);
+        
+        if(!users) {
+            ctx.body = { msg: '该用户名不存在!' };
+            return;
+        }
+        
+        if(users[0].password !== password){
+            ctx.body = { msg: '密码错误!'};
+            return;
+        }
+        const token = jwt.sign(payload, config.security.secretKey, {expiresIn: config.security.expiresIn });
+        ctx.status = 200;
         ctx.body = { token: token};
     })
 
-    return router;
+    /**
+     *  获取用户信息
+     */
+    router.get('/current',async ctx => {
+        ctx.body = JSON.stringify(await User.find({}));
+    })
 }
