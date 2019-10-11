@@ -1,4 +1,4 @@
-const config = {
+const constConfig = {
     security: {
         secretKey: "secretKey",
         // 过期时间 一周
@@ -7,4 +7,4 @@ const config = {
     mongoUrl: 'mongodb://lc:654321@47.106.200.221:27017/blog'
 }
 
-module.exports = config;
+module.exports = constConfig;
