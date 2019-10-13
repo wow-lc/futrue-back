@@ -5,5 +5,6 @@ const router = new Router({
 });
 
 require('./users')(router);
+require('./article')(router);
 
 module.exports = router;

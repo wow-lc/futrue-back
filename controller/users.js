@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const config = require('../config/constConfig');
 const dbHelper = require('../db/dbHelper');
+const pageHelper = require('../db/pageHelper');
 const Result = require('../commons/result');
 
 const User = dbHelper.getModel('user');
@@ -67,7 +68,19 @@ module.exports = (router) => {
     /**
      *  获取用户列表
      */
-    router.get('/user/list',async ctx => {
-        ctx.body = Result.successResult(JSON.stringify(await User.find({})));
+    router.post('/user/list',async ctx => {
+        const { page, pageSize } = ctx.request.body;
+        
+        let userList = {};
+
+        try {
+            userList = await pageHelper.pageQuery(page, pageSize, User, '', {}, {
+                createDate: 'desc'
+            });   
+        } catch (error) {
+            console.error(error);
+        }
+
+        ctx.body = Result.successResult(userList);
     })
 }

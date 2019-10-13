@@ -14,7 +14,7 @@ module.exports = {
             msg,
         }
     },
-    errorResult: ( msg='请登录!', err = null) => {
+    userCheckErrorResult: ( msg='请登录!', err = null) => {
         return {
             code: 1003,
             data: err,

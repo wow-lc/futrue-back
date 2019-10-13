@@ -20,7 +20,7 @@ app.use((ctx, next) => {
     return next().catch((err) => {
         if(err.status === 401){
             ctx.status = 200;
-      		ctx.body = Result.errorResult('',err);
+      		ctx.body = Result.userCheckErrorResult('请登录!',err);
         }else{
             throw err;
         }
