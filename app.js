@@ -14,6 +14,13 @@ app.use(bodyParser());
 // mongo
 require('./db/mongo');
 
+try {
+    require('./ws');
+    console.log('websocket server success 8080 ...');
+} catch (error) {
+    
+}
+
 // jwt鉴权
 // 错误处理
 app.use((ctx, next) => {
