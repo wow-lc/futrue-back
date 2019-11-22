@@ -1,8 +1,7 @@
-const jwt = require('jsonwebtoken');
-const config = require('../config/constConfig');
 const dbHelper = require('../db/dbHelper');
 const pageHelper = require('../db/pageHelper');
 const Result = require('../commons/result');
+const Tools = require('../commons/tools');
 
 const User = dbHelper.getModel('user');
 
@@ -23,21 +22,16 @@ module.exports = (router) => {
         }
 
         const newUser = new User({
-            username,
-            password,
-        }) 
+            ...ctx.request.body
+        });
         await newUser.save();
         ctx.body = Result.successResult();
     })
     /**
      * 登录
      */
-    router.post("/user/login", async ctx => {
+    router.post("/user/login",async ctx => {
         const { username, password } = ctx.request.body;
-        const payload = {
-            username,
-            password,
-        };
         // 验证
         const users = await User.findOne({ username });
         
@@ -49,8 +43,14 @@ module.exports = (router) => {
             ctx.body = Result.errorResult('密码错误!');
             return;
         }
+
+        const payload = {
+            id: users._id,
+            username,
+            password,
+        };
         
-        const token = jwt.sign(payload, config.security.secretKey, {expiresIn: config.security.expiresIn });
+        const token = Tools.getToken(payload);
         ctx.body = Result.successResult({ token }, '登录成功!');
     })
 
@@ -60,8 +60,12 @@ module.exports = (router) => {
     router.get(
         '/user/current',
         async ctx => {
-            // ctx.body = JSON.stringify(await User.find({}));
-            ctx.body = { msg: 'ok'}
+            const token = ctx.request.header.authorization;
+            const user = Tools.getJWTPayload(token);
+            // 验证
+            const userInfo = await User.findOne({"_id": user.id});
+            
+            ctx.body = Result.successResult(userInfo);
         }
     )
 
@@ -78,7 +82,8 @@ module.exports = (router) => {
                 createDate: 'desc'
             });   
         } catch (error) {
-            console.error(error);
+            ctx.body = Result.errorResult(undefined, error)
+            return;
         }
 
         ctx.body = Result.successResult(userList);

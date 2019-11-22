@@ -4,6 +4,7 @@ const router = new Router({
     prefix: '/api'
 });
 
+require('./common')(router);
 require('./users')(router);
 require('./article')(router);
 

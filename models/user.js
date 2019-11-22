@@ -7,6 +7,10 @@ module.exports = {
         type: String,
         required: true,
     },
+    avatar: {
+        type: String,
+        required: true,
+    },
     createDate:{
         type: Date,
         default: Date.now(),
