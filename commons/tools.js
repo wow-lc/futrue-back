@@ -1,6 +1,9 @@
 const jwt = require("jsonwebtoken");
 const config = require("../config/constConfig");
 
+const crypto = require('crypto') 
+const Identicon = require('identicon.js') 
+
 const secret = config.security.secretKey;
 
 /** 
@@ -34,4 +37,12 @@ exports.randomHashAvatar = (username) => {
     hash.update(username); // 传入用户名
     let imgData = new Identicon(hash.digest('hex')).toString()
     return'data:image/png;base64,'+imgData;
+}
+
+/**
+ * 密码加密
+ */
+exports.cryptoPwd = (pwd) => {
+    let md5 = crypto.createHash("md5");
+    return md5.update(pwd).digest("hex");;
 }

@@ -22,7 +22,9 @@ module.exports = (router) => {
         }
 
         const newUser = new User({
-            ...ctx.request.body
+            ...ctx.request.body,
+            password: Tools.cryptoPwd(password),
+            avatar: Tools.randomHashAvatar(username)
         });
         await newUser.save();
         ctx.body = Result.successResult();
@@ -39,7 +41,7 @@ module.exports = (router) => {
             ctx.body = Result.errorResult('该用户名不存在!');
             return;
         }
-        if(users.password !== password){
+        if(users.password !==  Tools.cryptoPwd(password)){
             ctx.body = Result.errorResult('密码错误!');
             return;
         }
@@ -87,5 +89,21 @@ module.exports = (router) => {
         }
 
         ctx.body = Result.successResult(userList);
+    })
+
+    /**
+     *  删除某一用户
+     */
+    router.del('/user/del/:id',async ctx => {
+        User.remove({"_id": ctx.params.id});
+        ctx.body = Result.successResult();
+    })
+
+    /**
+     *  删除所有用户列表
+     */
+    router.del('/user/delAll',async ctx => {
+        User.remove({});
+        ctx.body = Result.successResult();
     })
 }

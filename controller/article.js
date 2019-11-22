@@ -65,6 +65,14 @@ module.exports = (router) => {
     })
 
     /**
+     *  删除某一文章
+     */
+    router.del('/article/del/:id',async ctx => {
+        Article.remove({"_id": ctx.params.id});
+        ctx.body = Result.successResult();
+    })
+
+    /**
      * 点赞 (待完善 TODO)
      */
     router.post('/article/star/:id', async ctx => {
